@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>웨이팅 테스트</title>
+    <script>
+        function registerCustomer() {
+            const phone = document.getElementById("registerPhone").value;
+            fetch("/api/customer/save", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phoneNumber: phone })
+            })
+                .then(res => res.json())
+                .then(data => alert(`등록 완료: 대기 번호 ${data.waitingNumber}`))
+                .catch(err => alert("등록 실패"));
+        }
+
+        function enterCustomer() {
+            fetch("/api/customer/enter", { method: "POST" })
+                .then(res => res.text())
+                .then(data => alert(`입장 완료: ${data}`))
+                .catch(err => alert("입장 실패"));
+        }
+
+        function deleteCustomer() {
+            const phone = document.getElementById("deletePhone").value;
+            fetch(`/api/customer/delete/${phone}`, { method: "DELETE" })
+                .then(() => alert("삭제 완료"))
+                .catch(err => alert("삭제 실패"));
+        }
+
+        function showAllCustomers() {
+            fetch("/api/customer/all")
+                .then(res => res.json())
+                .then(data => {
+                    const list = data.map(c => `<li>${c.phoneNumber} - ${c.waitingNumber}</li>`).join('');
+                    document.getElementById("customerList").innerHTML = `<ul>${list}</ul>`;
+                });
+        }
+    </script>
+</head>
+<body>
+<h2>고객 등록</h2>
+<input type="text" id="registerPhone" placeholder="전화번호">
+<button onclick="registerCustomer()">등록</button>
+
+<h2>고객 입장</h2>
+<button onclick="enterCustomer()">입장 처리</button>
+
+<h2>고객 삭제</h2>
+<input type="text" id="deletePhone" placeholder="전화번호">
+<button onclick="deleteCustomer()">삭제</button>
+
+<h2>전체 고객 목록</h2>
+<button onclick="showAllCustomers()">조회</button>
+<div id="customerList"></div>
+
+<h2>알림 메세지 보내기</h2>
+
+</body>
+</html>
