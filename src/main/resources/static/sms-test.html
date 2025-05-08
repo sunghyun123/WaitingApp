@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>SMS 테스트 페이지</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 500px;
+            margin: 50px auto;
+        }
+        input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<h2>SMS 전송 테스트</h2>
+
+<label for="to">수신자 번호</label>
+<input type="text" id="to" placeholder="예: 01012345678" />
+
+<label for="message">보낼 메시지</label>
+<textarea id="message" rows="4" placeholder="여기에 메시지를 입력하세요."></textarea>
+
+<button onclick="sendSms()">메시지 전송</button>
+
+<p id="responseMessage"></p>
+
+<script>
+    function sendSms() {
+        const to = document.getElementById("to").value;
+        const message = document.getElementById("message").value;
+        const responseMsg = document.getElementById("responseMessage");
+
+        fetch("http://3.36.61.211:8081/sms/send", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ to, message })
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("HTTP 오류");
+                return res.text();  // JSON이 아닌 일반 텍스트 응답 처리
+            })
+            .then(data => {
+                responseMsg.textContent = "전송 성공: " + data;
+                responseMsg.className = "success";
+                console.log("응답 데이터:", data);
+            })
+            .catch(err => {
+                responseMsg.textContent = "전송 실패: " + err.message;
+                responseMsg.className = "error";
+                console.error("에러:", err);
+            });
+    }
+</script>
+
+</body>
+</html>
