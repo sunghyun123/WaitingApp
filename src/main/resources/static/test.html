@@ -9,17 +9,22 @@
             fetch("/api/customer/save", {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phoneNumber: phone })
+                body: JSON.stringify({ phoneNumber: phone, people: 1})
             })
                 .then(res => res.json())
-                .then(data => alert(`등록 완료: 대기 번호 ${data.waitingNumber}`))
+                .then(data => alert(`등록 완료: 대기 번호`))
                 .catch(err => alert("등록 실패"));
         }
 
         function enterCustomer() {
-            fetch("/api/customer/enter", { method: "POST" })
-                .then(res => res.text())
-                .then(data => alert(`입장 완료: ${data}`))
+            const phone = document.getElementById("enterPhone").value;
+            fetch("/api/customer/enter", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phoneNumber: phone})
+            })
+                .then(res => res.json())
+                .then(data => alert(`입장 완료`))
                 .catch(err => alert("입장 실패"));
         }
 
@@ -34,7 +39,7 @@
             fetch("/api/customer/all")
                 .then(res => res.json())
                 .then(data => {
-                    const list = data.map(c => `<li>${c.phoneNumber} - ${c.waitingNumber}</li>`).join('');
+                    const list = data.map(c => `<li>${c.phoneNumber}</li>`).join('');
                     document.getElementById("customerList").innerHTML = `<ul>${list}</ul>`;
                 });
         }
@@ -46,7 +51,8 @@
 <button onclick="registerCustomer()">등록</button>
 
 <h2>고객 입장</h2>
-<button onclick="enterCustomer()">입장 처리</button>
+<input type="text" id="enterPhone" placeholder="전화번호">
+<button onclick="enterCustomer()">입장</button>
 
 <h2>고객 삭제</h2>
 <input type="text" id="deletePhone" placeholder="전화번호">

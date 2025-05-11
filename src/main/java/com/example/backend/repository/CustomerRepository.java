@@ -14,4 +14,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     // 전체 고객을 대기번호 순으로 정렬
     List<Customer> findAllByOrderByWaitingNumberAsc();
+
+    //날짜를 입력받으면 자동으로 증가되는 변수
+    int countByDate(String date);
 }
