@@ -4,7 +4,10 @@ import com.example.backend.entity.Customer;
 import com.example.backend.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 
@@ -25,6 +28,7 @@ public class CustomerController {
         return customerService.getCustomerByPhoneNumber(phoneNumber);
     }
 
+
     // 2. 고객 등록 (대기열 번호 부여)
     @PostMapping("/save")
     public Customer saveCustomer(@RequestBody Customer customer) {
@@ -36,6 +40,17 @@ public class CustomerController {
 
         int maxWaitingNumber = customerService.getMaxWaitingNumber();
         customer.setWaitingNumber(maxWaitingNumber + 1);
+
+        // 현재 시간과 날짜 계산
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        customer.setStartTime(now.format(timeFormatter));
+        customer.setEnteredTime(now.plusMinutes(10).format(timeFormatter)); // 임의로 +10분 설정
+        customer.setWait(10); // 임의로 10분 대기 시간 설정
+        customer.setStatus("waiting");
+        customer.setDate(now.format(dateFormatter));
 
         return customerService.saveCustomer(customer);
     }
@@ -69,7 +84,7 @@ public class CustomerController {
         return "고객 삭제 완료: " + phoneNumber;
     }
 
-    // 전체 고객 대기열 목록 반환 (디버깅용)
+    // 전체 고객 대기열 목록 반환
     @GetMapping("/all")
     public List<Customer> getAllCustomers() {
         return customerService.getAllCustomersSortedByWaitingNumber();
