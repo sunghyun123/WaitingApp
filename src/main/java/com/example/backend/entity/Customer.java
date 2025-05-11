@@ -18,7 +18,32 @@ public class Customer {
     @Column(nullable = false, unique = true)
     private String phoneNumber;
 
-    // 필드명 통일: waitingNumber
+
+    //웨이팅 번호 서버 자동 할당
     @Column(nullable = false)
     private int waitingNumber;
+
+    //동반 인원 수
+    @Column(nullable = false)
+    private int people;
+
+    //대기 시작 시간
+    @Column(nullable = false)
+    private String startTime;
+
+    //웨이팅 예상 시간
+    @Column(nullable = false)
+    private int wait; // 예상 대기 시간 (분)
+
+    //현재 입장 상태, entered, waiting
+    @Column(nullable = false)
+    private String status;
+
+    //입장 종료 시간
+    @Column(nullable = false)
+    private String enteredTime;
+
+    //오늘 날짜
+    @Column(nullable = false)
+    private String date;
 }

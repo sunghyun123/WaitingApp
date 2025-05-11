@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://mydb.checaa2cyy2s.ap-northeast-2.rds.amazonaws.com:3306/waitingapp?serverTimezone=Asia/Seoul
+    url: jdbc:mysql://mydb2025.c16agemciyrr.ap-northeast-2.rds.amazonaws.com:3306/capstone?serverTimezone=Asia/Seoul
     username: admin
     password: 6174812Gus!
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -18,12 +18,6 @@ coolsms:
   api-key: NCSJG6MXSTMHGOLL
   api-secret: PGWQDQZMZM7HRELYYJXE6HAXT8DE539K
   from: 01037415951
-
-
-
-kakao:
-  api-url: https://kakaoapi.example.com/send
-  access-token: YOUR_KAKAO_ACCESS_TOKEN
 
 
 #jwt:
