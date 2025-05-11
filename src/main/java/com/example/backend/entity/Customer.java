@@ -18,6 +18,8 @@ public class Customer {
     @Column(nullable = false, unique = true)
     private String phoneNumber;
 
+    @Column(nullable = false)
+    private int waitingNumber_day;
 
     //웨이팅 번호 서버 자동 할당
     @Column(nullable = false)

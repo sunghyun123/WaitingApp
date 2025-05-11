@@ -1,9 +1,13 @@
 package com.example.backend.controller;
 
-import com.example.backend.dto.SmsRequestDto;
+import com.example.backend.dto.PhoneNumberDTO;
+import com.example.backend.entity.Customer;
+import com.example.backend.service.CustomerService;
 import com.example.backend.service.SmsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/sms")
@@ -12,9 +16,40 @@ public class SmsController {
     @Autowired
     private SmsService smsService;
 
+    @Autowired
+    private CustomerService customerService;
+
+
+
     // JSON 형식 요청 바디 받기
     @PostMapping("/send")
-    public String sendSms(@RequestBody SmsRequestDto smsRequest) {
-        return smsService.sendMessage(smsRequest.getTo(), smsRequest.getMessage());
+    public String sendSms(@RequestBody PhoneNumberDTO phoneNumberDTO) {
+
+        String phoneNum = phoneNumberDTO.getPhoneNumber();
+
+        Customer customer = customerService.getCustomerByPhoneNumber(phoneNum);
+        String cleaned = phoneNumberDTO.getPhoneNumber().replaceAll("-", "");
+
+        if (!isAllowed(cleaned)) {
+            return "허용되지 않은 번호입니다.";
+        }
+
+
+
+
+        String message = "내 앞 웨이팅: " + customer.getWaitingNumber();
+
+        return smsService.sendMessage(cleaned, message);
+    }
+
+    private boolean isAllowed(String phone) {
+        List<String> allowed = List.of(
+                "01028582631", //장현우
+                "01037415951", //조성현
+                "01050517183", //강경성
+                "01099675155", //신동훈
+                "01026602854"  //안상현
+                );
+        return allowed.contains(phone);
     }
 }
