@@ -5,9 +5,13 @@ import com.example.backend.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CustomerService {
@@ -150,6 +154,12 @@ public class CustomerService {
         return LocalDateTime.now();
     }
 
+
+    public int getTodayWaitingCount() {
+        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        return customerRepository.countByStatusAndDate("waiting", today);
+    }
+
     private String formatTime(LocalDateTime time) {
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         return time.format(timeFormatter);
@@ -158,6 +168,34 @@ public class CustomerService {
     private String formatDate(LocalDateTime time) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return time.format(dateFormatter);
+    }
+
+
+    public int getPeopleCountByDate(String date) {
+        Integer result = customerRepository.sumPeopleByDate(date);
+        return result != null ? result : 0;
+    }
+
+    public List<Map<String, Object>> getVisitStatsGraph() {
+        List<Map<String, Object>> stats = new ArrayList<>();
+        // 날짜 범위는 예시로 지난 7일을 가져옵니다. 필요에 따라 범위 조정 가능.
+        LocalDate today = LocalDate.now();
+
+        for (int i = 0; i < 7; i++) {
+            LocalDate date = today.minusDays(i);
+            String dateStr = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+            // 각 날짜에 해당하는 방문자 수 가져오기
+            int visitCount = customerRepository.countByDate(dateStr);
+
+            Map<String, Object> stat = new HashMap<>();
+            stat.put("date", dateStr);
+            stat.put("count", visitCount);
+
+            stats.add(stat);
+        }
+
+        return stats;
     }
 
 
