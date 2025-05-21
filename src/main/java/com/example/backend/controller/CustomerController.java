@@ -4,14 +4,14 @@ import com.example.backend.entity.Customer;
 import com.example.backend.repository.CustomerRepository;
 import com.example.backend.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/customer")
@@ -88,6 +88,32 @@ public class CustomerController {
         return customerService.getCustomerByPhoneNumber(phoneNumber);
     }
 
+    /// 현재 대기 팀 수 조회
+    @GetMapping("/waiting-count")
+    public ResponseEntity<Integer> getWaitingCount() {
+        int waitingCount = customerService.getTodayWaitingCount();
+        return ResponseEntity.ok(waitingCount);
+    }
+
+
+
+/// /////////////////////////////////////////////////////////////
+    @GetMapping("/people-count/{date}")
+    public ResponseEntity<Map<String, Object>> getPeopleCount(@PathVariable String date) {
+        int totalPeople = customerService.getPeopleCountByDate(date);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("date", date);
+        response.put("totalPeople", totalPeople);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/visit-stats-graph")
+    public ResponseEntity<List<Map<String, Object>>> getVisitStatsGraph() {
+        List<Map<String, Object>> stats = customerService.getVisitStatsGraph();
+        return ResponseEntity.ok(stats);
+    }
 
 
 }
