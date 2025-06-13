@@ -1,16 +1,13 @@
 package com.example.backend.controller;
 
 import com.example.backend.entity.Customer;
+import com.example.backend.entity.SettingInfo;
 import com.example.backend.repository.CustomerRepository;
+import com.example.backend.repository.SettingInfoRepository;
 import com.example.backend.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @RestController
@@ -19,10 +16,13 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+    private final SettingInfoRepository settingInfoRepository;
+
 
     @Autowired
-    public CustomerController(CustomerService customerService) {
+    public CustomerController(CustomerService customerService, SettingInfoRepository settingInfoRepository) {
         this.customerService = customerService;
+        this.settingInfoRepository = settingInfoRepository;
     }
 
 
@@ -38,10 +38,27 @@ public class CustomerController {
         return customerService.saveCustomer(customer);
     }
 
+    /// 7. 즉시 입장
+    @PostMapping("/directEnter")
+    public Customer directEnterCustomer(@RequestBody Customer customer) {
+        return customerService.directCustomer(customer); //현재 상태 waiting -> entered로 변경
+    }
+
     /// 3. 입장
     @PostMapping("/enter/{phoneNumber}")
     public void enterCustomer(@PathVariable String phoneNumber) {
-        customerService.changeCustomer(phoneNumber,"entered"); //현재 상태 waiting -> entered로 변경
+        int enteredCount = customerService.getTodayEnteredCount(); // 현재 입장한 인원 수
+
+        SettingInfo latestSetting = settingInfoRepository.findTopByOrderByIdDesc();// 현재 가게 내 테이블 갯수
+        Customer enteredFirstCustomer = customerService.findFirstEnteredCustomerToday();
+
+        if(enteredCount+1 > latestSetting.getTableCount()){  // 현재 테이블 개수보다 입장 인원이 많으면, 그 전에 입장한 인원을 done 처리
+            customerService.changeCustomer(enteredFirstCustomer.getPhoneNumber(),"exited");
+        }
+
+
+        customerService.changeCustomer(phoneNumber,"entered");
+        customerService.updateWaitingTime(phoneNumber);//현재 상태 waiting -> entered로 변경
     }
 
 
@@ -57,11 +74,15 @@ public class CustomerController {
         customerService.changeCustomer(phoneNumber, "canceled"); //현재 상태 waiting -> delete 로 변경
     }
 
+
     /// 6. 재등록
     @PostMapping("/re_save/{phoneNumber}")
     public void re_SaveCustomer(@PathVariable String phoneNumber) {
         customerService.changeCustomer(phoneNumber, "waiting"); //현재 상태 waiting -> delete 로 변경
     }
+
+
+
 
 
 
@@ -95,8 +116,22 @@ public class CustomerController {
         return ResponseEntity.ok(waitingCount);
     }
 
+    /// 현재 입장 팀 수 조회
+    @GetMapping("/entered-count")
+    public ResponseEntity<Integer> getEnteredCount() {
+        int enteredCount = customerService.getTodayEnteredCount();
+        return ResponseEntity.ok(enteredCount);
+    }
+
+    /// 현재 테이블 갯 수 조회
+    @GetMapping("/table-count")
+    public ResponseEntity<Integer> getTableCount() {
+        SettingInfo latestSetting = settingInfoRepository.findTopByOrderByIdDesc();
+        return ResponseEntity.ok(latestSetting.getTableCount());
+    }
 
 
+///  지금은 안쓸꺼지만 일단 냅둬보는 api
 /// /////////////////////////////////////////////////////////////
     @GetMapping("/people-count/{date}")
     public ResponseEntity<Map<String, Object>> getPeopleCount(@PathVariable String date) {
@@ -114,6 +149,7 @@ public class CustomerController {
         List<Map<String, Object>> stats = customerService.getVisitStatsGraph();
         return ResponseEntity.ok(stats);
     }
+
 
 
 }

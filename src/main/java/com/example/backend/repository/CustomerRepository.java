@@ -24,8 +24,14 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     int countByDateAndStatus(String date, String status);
 
+    Customer findFirstByStatusAndDateOrderByIdAsc(String status, String date);
+
 
 
     @Query("SELECT SUM(c.people) FROM Customer c WHERE c.date = :date")
     Integer sumPeopleByDate(@Param("date") String date);
+
+    int countByStatus(String status);
+
+    List<Customer> findByStatus(String status);
 }

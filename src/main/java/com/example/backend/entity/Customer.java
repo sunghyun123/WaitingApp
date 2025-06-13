@@ -33,11 +33,11 @@ public class Customer {
     @Column(nullable = false)
     private String startTime;
 
-    //웨이팅 예상 시간
+    //웨이팅 시간
     @Column(nullable = false)
     private int wait; // 예상 대기 시간 (분)
 
-    //현재 입장 상태, entered, waiting
+    //현재 입장 상태, entered, waiting, cancel, done
     @Column(nullable = false)
     private String status;
 

@@ -4,6 +4,7 @@ import com.example.backend.dto.PhoneNumberDTO;
 import com.example.backend.entity.Customer;
 import com.example.backend.service.CustomerService;
 import com.example.backend.service.SmsService;
+import com.example.backend.service.WaitingTimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,11 @@ public class SmsController {
     @Autowired
     private CustomerService customerService;
 
+    private final WaitingTimeService waitingTimeService;
+
+    public SmsController(WaitingTimeService waitingTimeService) {
+        this.waitingTimeService = waitingTimeService;
+    }
 
 
     // JSON 형식 요청 바디 받기
@@ -37,7 +43,11 @@ public class SmsController {
 
 
 
-        String message = "내 앞 웨이팅: " + customer.getWaitingNumber();
+        String message = "고객님의 웨이팅이 접수되었습니다.\n" +
+                "인원: " + customer.getPeople() + "명\n" +
+                "웨이팅 번호: " + customer.getWaitingNumber() + "번\n" +
+                "예상 대기 시간: " + waitingTimeService.calculateExpectedWaitTimeForNewCustomer() + "분\n" +
+                "변동 사항이 있을 경우에는 매장으로 연락 부탁 드립니다.";
 
         return smsService.sendMessage(cleaned, message);
     }

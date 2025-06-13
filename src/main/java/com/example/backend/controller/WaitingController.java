@@ -19,22 +19,10 @@ public class WaitingController {
         this.waitingTimeService = waitingTimeService;
     }
 
-    @PostMapping("/estimate")
-    public ResponseEntity<Map<String, Long>> getEstimatedWaitTime(@RequestBody Map<String, Long> body) {
-        long currentClientWait = body.getOrDefault("currentWait", 0L);
-        long waitTime = waitingTimeService.estimateWaitTime(currentClientWait);
-        Map<String, Long> result = new HashMap<>();
-        result.put("waitTime", waitTime);
-        return ResponseEntity.ok(result);
+    @GetMapping("/expected-wait-time")
+    public ResponseEntity<Integer> getExpectedWaitTime() {
+        int waitMinutes = waitingTimeService.calculateExpectedWaitTimeForNewCustomer();
+        return ResponseEntity.ok(waitMinutes);
     }
 
-
-    @PostMapping("/delete")
-    public ResponseEntity<Map<String, Long>> deleteWaitTime(@RequestBody Map<String, Long> body) {
-        long currentClientWait = body.getOrDefault("currentWait", 0L);
-        long waitTime = waitingTimeService.deleteWaitTime(currentClientWait);
-        Map<String, Long> result = new HashMap<>();
-        result.put("waitTime", waitTime);
-        return ResponseEntity.ok(result);
-    }
 }

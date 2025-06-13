@@ -37,7 +37,6 @@ public class SmsService {
         message.setTo(to);
         message.setText(text);
 
-        // ✅ 수정된 부분
         SingleMessageSendingRequest request = new SingleMessageSendingRequest(message);
         SingleMessageSentResponse response = messageService.sendOne(request);
 
