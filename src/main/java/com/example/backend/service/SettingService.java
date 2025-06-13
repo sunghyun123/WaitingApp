@@ -19,14 +19,18 @@ public class SettingService {
         this.waitingTimeService = waitingTimeService;
     }
 
-    public SettingInfo saveSetting(int averageWaitTime, int tableCount) {
-        // 설정 정보는 새로 저장 (하나만 유지하고 싶다면 다른 방식 권장)
-        SettingInfo setting = new SettingInfo();
-        setting.setAverageWaitTime(averageWaitTime);
-        setting.setTableCount(tableCount);
+//    public SettingInfo saveSetting(int averageWaitTime, int tableCount) {
+//        // 설정 정보는 새로 저장 (하나만 유지하고 싶다면 다른 방식 권장)
+//        SettingInfo setting = new SettingInfo();
+//        setting.setAverageWaitTime(averageWaitTime);
+//        setting.setTableCount(tableCount);
+//
+//
+//        return settingInfoRepository.save(setting);
+//    }
 
-
-        return settingInfoRepository.save(setting);
+    public void saveSetting(SettingInfo settingInfo) {
+        settingInfoRepository.save(settingInfo);
     }
 
     public SettingInfo getLatestSetting() {

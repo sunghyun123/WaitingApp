@@ -18,14 +18,15 @@
 
         function enterCustomer() {
             const phone = document.getElementById("enterPhone").value;
-            fetch("/api/customer/enter", {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phoneNumber: phone})
+            fetch(`/api/customer/enter/${phone}`, {
+                method: "POST"
             })
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) throw new Error("입장 실패");
+                    return res.text(); // or res.json() if your server returns JSON
+                })
                 .then(data => alert(`입장 완료`))
-                .catch(err => alert("입장 실패"));
+                .catch(err => alert(err.message));
         }
 
         function deleteCustomer() {
@@ -47,7 +48,7 @@
 </head>
 <body>
 <h2>고객 등록</h2>
-<input type="text" id="registerPhone" placeholder="전화번호">
+<input type="text" id="registerPhone" placeholder="전화번호" oninput="formatPhoneNumber(this)">
 <button onclick="registerCustomer()">등록</button>
 
 <h2>고객 입장</h2>

@@ -15,4 +15,5 @@ public class SettingInfo {
 
     private int averageWaitTime; // 평균 대기 시간 (분)
     private int tableCount; // 테이블 수
+    private String type; // 음식 종류
 }
