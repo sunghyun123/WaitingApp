@@ -6,6 +6,10 @@
 Spring Boot 기반의 백엔드 API 서버를 직접 설계·구현하고
 AWS EC2 + RDS 환경에 배포하는 것을 목표로 진행한 프로젝트입니다.
 
+###  아키텍쳐
+![img.png](img.png)
+
+
 ### 🛠️ 기술 스택
 
 * Backend: Java, Spring Boot
